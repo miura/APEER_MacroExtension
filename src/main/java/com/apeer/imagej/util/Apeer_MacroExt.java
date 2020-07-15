@@ -10,16 +10,10 @@ package com.apeer.imagej.util;
 
 import ij.IJ;
 import ij.ImageJ;
-// import ij.ImagePlus;
-// import ij.gui.GenericDialog;
-// import ij.plugin.filter.PlugInFilter;
-// import ij.process.ImageProcessor;
 import ij.macro.ExtensionDescriptor;
 import ij.macro.Functions;
 import ij.macro.MacroExtension;
 import ij.plugin.PlugIn;
-//import sc.fiji.i5d.Image5D;
-//import sc.fiji.i5d.gui.ChannelControl;
 import java.io.PrintStream;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -44,6 +38,7 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
     private static HashMap<String, String> jsonmap;
     private static String WFE_input_file = "";
 //    private static String WFE_output_file = "";
+
 	@Override
 	public void run(final String arg) {
 		if (!IJ.macroRunning()) {
@@ -55,14 +50,6 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
 	}
 
 	private final ExtensionDescriptor[] extensions = {
-		//ExtensionDescriptor.newDescriptor("getChannel", this, ARG_OUTPUT +
-		//	ARG_NUMBER),
-		//ExtensionDescriptor
-		//	.newDescriptor("getFrame", this, ARG_OUTPUT + ARG_NUMBER),
-		//ExtensionDescriptor.newDescriptor("setChannel", this, ARG_NUMBER),
-		//ExtensionDescriptor.newDescriptor("setFrame", this, ARG_NUMBER),
-		//ExtensionDescriptor.newDescriptor("getDisplayMode", this),
-		//ExtensionDescriptor.newDescriptor("setDisplayMode", this, ARG_STRING),
 		ExtensionDescriptor.newDescriptor("setWFE_Input_FilePath", this, ARG_STRING),
 //		ExtensionDescriptor.newDescriptor("setWFE_Output_FilePath", this, ARG_STRING),
 		ExtensionDescriptor.newDescriptor("initializeJSON_out", this),
@@ -74,7 +61,8 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
 		ExtensionDescriptor.newDescriptor("saveJSON_OUT", this, ARG_STRING),
 		ExtensionDescriptor.newDescriptor("callLog", this, ARG_STRING), 
 		ExtensionDescriptor.newDescriptor("test2strings", this, ARG_STRING, ARG_STRING),};
-	@Override
+	
+    @Override
 	public ExtensionDescriptor[] getExtensionFunctions() {
 		return extensions;
 	}
@@ -106,19 +94,14 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
             System.out.println( "JSON_out initialized...");
         }		
 		else if (name.equals("captureWFE_JSON")) {
-			//WFE_file = "/params/WFE_input_params.json";
-			//String WFE_file = "/Users/miura/Dropbox/Freelance/projects/ZEISS_APEER/APEER_IJM_EpidermalCell_Tracking/params/WFE_input_params.json";
 			String WFE_JSON = "";
 			File wfef = new File(WFE_input_file);
 			if ( !wfef.exists() ){
 				WFE_JSON = java.lang.System.getenv("WFE_INPUT_JSON");
 			} else {
-				//String contents = new String(Files.readAllBytes(Paths.get("manifest.mf")));
-				
 				try {
                     WFE_JSON = new String(Files.readAllBytes(Paths.get( WFE_input_file )));
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
 			}		
@@ -126,20 +109,16 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
 			((String[]) args[0])[0] = (String) WFE_JSON;
 		}
         else if (name.equals("getWFEvalue")) {
-            //WFE_file = "/params/WFE_input_params.json";
-            //String WFE_file = "/Users/miura/Dropbox/Freelance/projects/ZEISS_APEER/APEER_IJM_EpidermalCell_Tracking/params/WFE_input_params.json";
             String WFE_JSON = "";
             File wfef = new File(WFE_input_file);
             if ( !wfef.exists() ){
                 System.out.println( "Loading input parameters from environment..." );
                 WFE_JSON = java.lang.System.getenv("WFE_INPUT_JSON");
             } else {
-                //String contents = new String(Files.readAllBytes(Paths.get("manifest.mf")));
                 System.out.println( "Loading input parameters from local file..." );
                 try {
                     WFE_JSON = new String(Files.readAllBytes(Paths.get( WFE_input_file )));
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }       

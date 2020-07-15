@@ -10,6 +10,7 @@ print("----");
 //Ext.test2strings("thefirst", "the second");
 
 inputpath = "/Users/miura/Dropbox/Freelance/projects/ZEISS_APEER/APEER_IJM_EpidermalCell_Tracking/params/WFE_input_params.json";
+//inputpath = "/params/WFE_input_params.json";
 Ext.setWFE_Input_FilePath( inputpath );
 Ext.captureWFE_JSON( wfejson );
 print( wfejson );
