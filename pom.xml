@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+		http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.scijava</groupId>
+		<artifactId>pom-scijava</artifactId>
+		<version>29.0.0-beta-3</version>
+		<relativePath />
+	</parent>
+
+	<groupId>com.apeer</groupId>
+	<artifactId>Apeer_MacroExt</artifactId>
+	<version>0.1.0-SNAPSHOT</version>
+
+	<name>APEER MacroExt</name>
+	<description>A Maven project implementing an ImageJ 1.x plugin.</description>
+	<url>http://mycompany.com/imagej/apeer-macroext/</url>
+	<inceptionYear>2020</inceptionYear>
+	<organization>
+		<name>My Company</name>
+		<url>http://mycompany.com/</url>
+	</organization>
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>kota</id>
+			<name>Kota Miura</name>
+			<url>http://wiki.cmci.info</url>
+			<roles>
+				<role>lead</role>
+				<role>developer</role>
+				<role>debugger</role>
+				<role>reviewer</role>
+				<role>support</role>
+				<role>maintainer</role>
+			</roles>
+		</developer>
+	</developers>
+	<contributors>
+		<contributor>
+			<name>Kota Miura</name>
+			<url>https://imagej.net/User:Miura</url>
+			<roles><role>founder</role></roles>
+			<properties><id>kota</id></properties>
+		</contributor>
+	</contributors>
+	<mailingLists>
+		<mailingList>
+			<name>Github Issues</name>
+			<archive>https://github.com/miura/apeer-macroext/issues</archive>
+		</mailingList>
+	</mailingLists>
+
+	<scm>
+		<connection>scm:git:git://github.com/miura/apeer-macroext</connection>
+		<developerConnection>scm:git:git@github.com:miura/apeer-macroext</developerConnection>
+		<tag>HEAD</tag>
+		<url>https://github.com/miura/apeer-macroext</url>
+	</scm>
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/miura/apeer-macroext/issues</url>
+	</issueManagement>
+	<ciManagement>
+		<system>None</system>
+	</ciManagement>
+
+	<properties>
+		<package-name>com.apeer.imagej.util</package-name>
+		<main-class>com.apeer.imagej.util.Apeer_MacroExt</main-class>
+		<license.licenseName>MIT</license.licenseName>
+		<license.copyrightOwners>Kota Miura</license.copyrightOwners>
+	</properties>
+
+    <dependencies>
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>ij</artifactId>
+		</dependency>
+<!--         <dependency>
+            <groupId>com.apeer</groupId>
+            <artifactId>apeer-dev-kit</artifactId>
+            <version>1.0.4</version>
+        </dependency> -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20180813</version>
+            <scope>provided</scope>
+        </dependency>		
+    </dependencies>
+</project>
