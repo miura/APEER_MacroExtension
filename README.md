@@ -1,81 +1,25 @@
-This is an example Maven project implementing an ImageJ 1.x plugin.
+# APEER Macro Extension
 
-It is intended as an ideal starting point to develop new ImageJ 1.x plugins
-in an IDE of your choice. You can even collaborate with developers using a
-different IDE than you.
+Kota Miura
 
-* In [Eclipse](http://eclipse.org), for example, it is as simple as
-  _File &#8250; Import... &#8250; Existing Maven Project_.
+## Usage
 
-* In [NetBeans](http://netbeans.org), it is even simpler:
-  _File &#8250; Open Project_.
+This plugin addes new macro commands to ImageJ (Fiji), that are helpful for coding ImageJ macro for APEER modules. The plugin JAR file should be copied to the plugin directory. 
 
-* The same works in [IntelliJ](http://jetbrains.net).
+For using commands listed below, please first load new commands in your ImageJ macro inserting the follwoing one line before those commands are used. 
 
-* If [jEdit](http://jedit.org) is your preferred IDE, you will need the
-  [Maven Plugin](http://plugins.jedit.org/plugins/?MavenPlugin).
+`run("APEER MacroExtensions");`
 
-Die-hard command-line developers can use Maven directly by calling `mvn`
-in the project root.
+## Commands
 
-However you build the project, in the end you will have the `.jar` file
-(called *artifact* in Maven speak) in the `target/` subdirectory.
+| command                                       | description                                                  |
+| --------------------------------------------- | ------------------------------------------------------------ |
+| Ext.shout( *String* )                         | This is like the build in command `print( string )`, but outputs the *String* in the console. As Log window is not present in the docker-headless mode, it helps debugging and also to monitor the progress especially during development. |
+| Ext.currentTime( *String*)                    | This commands calls back current time as a string to the given argument *String* |
+| Ext.setWFE_Input_FilePath( *pathstring* )     | **[required for local testing]** This commands sets the file path to the **WFE_input_params.json** file. Details: Some information that are required for running the macro, such as the file path to the image data, parameter settings for the execution of certain algorithm (e.g. Gaussian blur sigma value) are handed to the module via environmental variable *WFE_INPUT_JSON*, that is stored in the operation system, when the module is executed in the APEER server. This is because modules are supposed to be a part of a workflow, and some outputs data from one module are passed to the next module and location of thse data files and  raw values should be notified to the next module, and this is done using this environmental variable. However, in case of running the module locally for development, we can also provide those information as a text file called **WFE_input_params.json**. This commands allows you to set the path to this file. |
+| Ext.captureWFE_JSON( wfejson )                |                                                              |
+| Ext.initializeJSON_out()                      |                                                              |
+| Ext.getWFEvalue("trackstack_name", filename)  |                                                              |
+| Ext.saveTiffAPEER ( keystring,  pathstring ); |                                                              |
+| Ext.saveResultsAPEER( keystring, pathstring); |                                                              |
 
-To copy the artifact into the correct place, you can call
-`mvn -Dscijava.app.directory=/path/to/ImageJ.app/`.
-This will not only copy your artifact, but also all the dependencies. Restart
-your ImageJ or call *Help &#8250; Refresh Menus* to see your plugin in the menus.
-
-Developing plugins in an IDE is convenient, especially for debugging. To
-that end, the plugin contains a `main` method which sets the `plugins.dir`
-system property (so that the plugin is added to the Plugins menu), starts
-ImageJ, loads an image and runs the plugin. See also
-[this page](https://imagej.net/Debugging#Debugging_plugins_in_an_IDE_.28Netbeans.2C_IntelliJ.2C_Eclipse.2C_etc.29)
-for information how ImageJ makes it easier to debug in IDEs.
-
-Since this project is intended as a starting point for your own
-developments, it is in the public domain.
-
-How to use this project as a starting point
-===========================================
-
-1. Visit [this link](https://github.com/imagej/example-legacy-plugin/generate)
-   to create a new repository in your space using this one as a template.
-
-2. [Clone your new repository](https://help.github.com/en/articles/cloning-a-repository).
-
-3. Edit the `pom.xml` file. Every entry should be pretty self-explanatory.
-   In particular, change
-    1. the *artifactId* (**NOTE**: should contain a '_' character)
-    2. the *groupId*, ideally to a reverse domain name your organization owns
-    3. the *version* (note that you typically want to use a version number
-       ending in *-SNAPSHOT* to mark it as a work in progress rather than a
-       final version)
-    4. the *dependencies* (read how to specify the correct
-       *groupId/artifactId/version* triplet
-       [here](https://imagej.net/Maven#How_to_find_a_dependency.27s_groupId.2FartifactId.2Fversion_.28GAV.29.3F))
-    5. the *developer* information
-    6. the *scm* information
-
-4. Remove the `Process_Pixels.java` file and add your own `.java` files
-   to `src/main/java/<package>/` (if you need supporting files -- like icons
-   -- in the resulting `.jar` file, put them into `src/main/resources/`)
-
-5. Edit `src/main/resources/plugins.config`
-
-6. Replace the contents of `README.md` with information about your project.
-
-7. Make your initial
-   [commit](https://help.github.com/en/desktop/contributing-to-projects/committing-and-reviewing-changes-to-your-project) and
-   [push the results](https://help.github.com/en/articles/pushing-commits-to-a-remote-repository)!
-
-### Eclipse: To ensure that Maven copies the plugin to your ImageJ folder
-
-1. Go to _Run Configurations..._
-2. Choose _Maven Build_
-3. Add the following parameter:
-    - name: `scijava.app.directory`
-    - value: `/path/to/ImageJ.app/`
-
-This ensures that the final `.jar` file will also be copied to
-your ImageJ plugins folder everytime you run the Maven build.
