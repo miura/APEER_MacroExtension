@@ -71,7 +71,7 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
 
 		if (name.equals("shout")) {
 			String logtext = (String) args[0];
-			System.out.println("[LOG]: " + logtext);
+			System.out.println("[MACRO LOG]: " + logtext);
 		}
 		else if (name.equals("currentTime")) {
 			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -81,7 +81,7 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
         else if (name.equals("setWFE_Input_FilePath")) {
             String filepath = (String) args[0];
             WFE_input_file = filepath;
-            System.out.println( "WFE input file: set to " +  WFE_input_file );
+            System.out.println( "[plugin] WFE input file: set to " +  WFE_input_file );
         }
 //        else if (name.equals("setWFE_Output_FilePath")) {
 //            String filepath = (String) args[0];
@@ -152,7 +152,7 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
             }catch(IOException ex){
                 ex.printStackTrace();
             }            
-            System.out.println("JSON out written...");
+            System.out.println("[plugin] JSON out written...");
         }
         else if (name.equals("test2strings")) {
             String text = (String) args[0];
