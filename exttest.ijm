@@ -1,10 +1,10 @@
 // test macro extensions. 
 
 run("APEER MacroExtensions");
-Ext.callLog("here is the output");
+Ext.shout("here is the output");
 
 Ext.currentTime( curt );
-Ext.callLog( "logging " + curt );
+Ext.shout( "logging " + curt );
 print( curt );
 print("----");
 //Ext.test2strings("thefirst", "the second");
