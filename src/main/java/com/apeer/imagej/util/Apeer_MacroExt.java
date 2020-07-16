@@ -9,12 +9,10 @@
 package com.apeer.imagej.util;
 
 import ij.IJ;
-import ij.ImageJ;
 import ij.macro.ExtensionDescriptor;
 import ij.macro.Functions;
 import ij.macro.MacroExtension;
 import ij.plugin.PlugIn;
-import java.io.PrintStream;
 import java.sql.Timestamp;
 import java.util.HashMap;
 
@@ -59,7 +57,8 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
 	    ExtensionDescriptor.newDescriptor("saveTiffAPEER", this, ARG_STRING, ARG_STRING),
 	    ExtensionDescriptor.newDescriptor("saveResultsAPEER", this, ARG_STRING, ARG_STRING),
 		ExtensionDescriptor.newDescriptor("saveJSON_OUT", this, ARG_STRING),
-		ExtensionDescriptor.newDescriptor("callLog", this, ARG_STRING), 
+		ExtensionDescriptor.newDescriptor("shout", this, ARG_STRING), 
+		ExtensionDescriptor.newDescriptor("exit", this), 
 		ExtensionDescriptor.newDescriptor("test2strings", this, ARG_STRING, ARG_STRING),};
 	
     @Override
@@ -70,7 +69,7 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
 	@Override
 	public String handleExtension(final String name, final Object[] args) {
 
-		if (name.equals("callLog")) {
+		if (name.equals("shout")) {
 			String logtext = (String) args[0];
 			System.out.println("[LOG]: " + logtext);
 		}
@@ -91,7 +90,7 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
 //        }
         else if (name.equals("initializeJSON_out")) {
             initializeJSONmap();
-            System.out.println( "JSON_out initialized...");
+            System.out.println( "[plugin] JSON_out initialized...");
         }		
 		else if (name.equals("captureWFE_JSON")) {
 			String WFE_JSON = "";
@@ -112,10 +111,10 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
             String WFE_JSON = "";
             File wfef = new File(WFE_input_file);
             if ( !wfef.exists() ){
-                System.out.println( "Loading input parameters from environment..." );
+                System.out.println( "[plugin] Loading input parameters from environment" );
                 WFE_JSON = java.lang.System.getenv("WFE_INPUT_JSON");
             } else {
-                System.out.println( "Loading input parameters from local file..." );
+                System.out.println( "[plugin] Loading input parameters from local file" );
                 try {
                     WFE_JSON = new String(Files.readAllBytes(Paths.get( WFE_input_file )));
                 } catch (IOException e) {
@@ -129,20 +128,20 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
                 String val = jo.getString( key );
                 ((String[]) args[1])[0] = (String) val;
             } else {
-                ((String[]) args[1])[0] = "None";
+                ((String[]) args[1])[0] = "[plugin] None";
             }
         }
         else if (name.equals("saveTiffAPEER")) {
             String labelstring = (String) args[0];
             String pathstring = (String) args[1];
             saveTiffjson( labelstring, pathstring);
-            System.out.println("Saved Tiff...");
+            System.out.println("[plugin] Saved Tiff");
         }
         else if (name.equals("saveResultsAPEER")) {
             String labelstring = (String) args[0];
             String pathstring = (String) args[1];
             saveResultsJson( labelstring, pathstring);
-            System.out.println("Saved Results...");
+            System.out.println("[plugin] Saved Results");
         }   		
         else if (name.equals("saveJSON_OUT")) {
             String pathstring = (String) args[0];           
@@ -160,7 +159,10 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
             String text1 = (String) args[1];
             System.out.println("[LOG0]: " + text);
             System.out.println("[LOG1]: " + text1);
-        }		
+        }
+        else if (name.equals("exit")) {
+            System.exit(0);
+        }   		
 		return null;
 	}
 	void initializeJSONmap(){
