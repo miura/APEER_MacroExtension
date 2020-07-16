@@ -169,12 +169,16 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
 	
 	void saveTiffjson(String labelName, String path){
 	    IJ.saveAs("Tiff", path);
+	    if ( jsonmap == null )
+	        initializeJSONmap();
 	    jsonmap.put(labelName, path);
 	}
 	
 	//save results as CSV file if the path ends with .csv
     void saveResultsJson(String labelName, String path){
         IJ.saveAs("Results", path);
+        if ( jsonmap == null )
+            initializeJSONmap();
         jsonmap.put(labelName, path);
     }	
 
