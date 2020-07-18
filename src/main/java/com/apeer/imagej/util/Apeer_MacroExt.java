@@ -56,6 +56,7 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
 	    ExtensionDescriptor.newDescriptor("getWFEvalue", this, ARG_STRING, ARG_OUTPUT + ARG_STRING),
 	    ExtensionDescriptor.newDescriptor("saveTiffAPEER", this, ARG_STRING, ARG_STRING),
 	    ExtensionDescriptor.newDescriptor("saveResultsAPEER", this, ARG_STRING, ARG_STRING),
+	    ExtensionDescriptor.newDescriptor("saveAsAPEER", this, ARG_STRING, ARG_STRING, ARG_STRING),
 		ExtensionDescriptor.newDescriptor("saveJSON_OUT", this, ARG_STRING),
 		ExtensionDescriptor.newDescriptor("shout", this, ARG_STRING), 
 		ExtensionDescriptor.newDescriptor("exit", this), 
@@ -142,7 +143,14 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
             String pathstring = (String) args[1];
             saveResultsJson( labelstring, pathstring);
             System.out.println("[plugin] Saved Results");
-        }   		
+        }
+        else if (name.equals("saveAsAPEER")) {
+            String labelstring = (String) args[0];
+            String formatstring = (String) args[1];
+            String pathstring = (String) args[2];
+            saveAsAPEER(labelstring, formatstring, pathstring);
+            System.out.println("[plugin] Saved Results");
+        } 		
         else if (name.equals("saveJSON_OUT")) {
             String pathstring = (String) args[0];           
             Path path = Paths.get( pathstring );
@@ -184,6 +192,13 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
         jsonmap.put(labelName, path);
     }	
 
+	//built-in macro saveAs command added with addition to JSON out
+    void saveAsAPEER(String labelName, String format, String path){
+        IJ.saveAs(format, path);
+        if ( jsonmap == null )
+            initializeJSONmap();
+        jsonmap.put(labelName, path);
+    }	
 
 // 	public static void main(String[] args) throws Exception {
 // 		// set the plugins.dir property to make the plugin appear in the Plugins menu
