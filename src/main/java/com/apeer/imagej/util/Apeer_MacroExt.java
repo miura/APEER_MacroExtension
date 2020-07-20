@@ -9,15 +9,20 @@
 package com.apeer.imagej.util;
 
 import ij.IJ;
+import ij.WindowManager;
 import ij.macro.ExtensionDescriptor;
 import ij.macro.Functions;
 import ij.macro.MacroExtension;
+import ij.measure.ResultsTable;
 import ij.plugin.PlugIn;
+import ij.text.TextWindow;
+
 import java.sql.Timestamp;
 import java.util.HashMap;
 
 import org.json.JSONObject;
 
+import java.awt.Frame;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -56,6 +61,7 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
 	    ExtensionDescriptor.newDescriptor("getWFEvalue", this, ARG_STRING, ARG_OUTPUT + ARG_STRING),
 	    ExtensionDescriptor.newDescriptor("saveTiffAPEER", this, ARG_STRING, ARG_STRING),
 	    ExtensionDescriptor.newDescriptor("saveResultsAPEER", this, ARG_STRING, ARG_STRING),
+	    ExtensionDescriptor.newDescriptor("saveTableAPEER", this, ARG_STRING, ARG_STRING, ARG_STRING),
 	    ExtensionDescriptor.newDescriptor("saveAsAPEER", this, ARG_STRING, ARG_STRING, ARG_STRING),
 		ExtensionDescriptor.newDescriptor("saveJSON_OUT", this, ARG_STRING),
 		ExtensionDescriptor.newDescriptor("shout", this, ARG_STRING), 
@@ -144,6 +150,13 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
             saveResultsJson( labelstring, pathstring);
             System.out.println("[plugin] Saved Results");
         }
+        else if (name.equals("saveTableAPEER")) {
+            String labelstring = (String) args[0];
+            String tabletitlestring = (String) args[1];
+            String pathstring = (String) args[2];
+            saveTableJson( labelstring, tabletitlestring, pathstring);
+            System.out.println("[plugin] Saved Table");
+        }		
         else if (name.equals("saveAsAPEER")) {
             String labelstring = (String) args[0];
             String formatstring = (String) args[1];
@@ -156,7 +169,7 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
             Path path = Paths.get( pathstring );
             JSONObject jo = new JSONObject( jsonmap );
             try ( BufferedWriter writer = Files.newBufferedWriter(path, Charset.forName("UTF-8")) ){               
-                writer.write( jo.toString(2) );
+                writer.write( jo.toString() );
             }catch(IOException ex){
                 ex.printStackTrace();
             }            
@@ -190,7 +203,25 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
         if ( jsonmap == null )
             initializeJSONmap();
         jsonmap.put(labelName, path);
-    }	
+    }
+    //save results as CSV file if the path ends with .csv
+    void saveTableJson(String labelName, String tableTitle, String path){
+        //IJ.saveAs("Results", path);
+        Frame frame = WindowManager.getFrame(tableTitle);
+        if (frame != null){
+            ResultsTable rt = ((TextWindow) frame).getResultsTable();
+            try {
+                rt.saveAs(path);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if ( jsonmap == null )
+                initializeJSONmap();
+            jsonmap.put(labelName, path);
+        } else {
+            System.out.println("[PLUGIN] could not find the table:" + tableTitle);
+        }
+    }       
 
 	//built-in macro saveAs command added with addition to JSON out
     void saveAsAPEER(String labelName, String format, String path){
