@@ -169,7 +169,7 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
             Path path = Paths.get( pathstring );
             JSONObject jo = new JSONObject( jsonmap );
             try ( BufferedWriter writer = Files.newBufferedWriter(path, Charset.forName("UTF-8")) ){               
-                writer.write( jo.toString() );
+                writer.write( jo.toString(2) );
             }catch(IOException ex){
                 ex.printStackTrace();
             }            
