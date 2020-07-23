@@ -19,6 +19,7 @@ import ij.text.TextWindow;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.json.JSONObject;
 
@@ -64,6 +65,7 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
 	    ExtensionDescriptor.newDescriptor("saveTableAPEER", this, ARG_STRING, ARG_STRING, ARG_STRING),
 	    ExtensionDescriptor.newDescriptor("saveAsAPEER", this, ARG_STRING, ARG_STRING, ARG_STRING),
 		ExtensionDescriptor.newDescriptor("saveJSON_OUT", this, ARG_STRING),
+//		ExtensionDescriptor.newDescriptor("checkSaveJSON_OUT", this, ARG_STRING),
 		ExtensionDescriptor.newDescriptor("shout", this, ARG_STRING), 
 		ExtensionDescriptor.newDescriptor("exit", this), 
 		ExtensionDescriptor.newDescriptor("test2strings", this, ARG_STRING, ARG_STRING),};
@@ -164,17 +166,30 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
             saveAsAPEER(labelstring, formatstring, pathstring);
             System.out.println("[plugin] Saved Results");
         } 		
+//        else if (name.equals("saveJSON_OUT")) {
+//            String pathstring = (String) args[0];           
+//            Path path = Paths.get( pathstring );
+//            JSONObject jo = new JSONObject( jsonmap );
+//            try ( BufferedWriter writer = Files.newBufferedWriter(path, Charset.forName("UTF-8")) ){               
+//                writer.write( jo.toString(2) );
+//            }catch(IOException ex){
+//                ex.printStackTrace();
+//            }            
+//            System.out.println("[plugin] JSON out written...");
+//        }
         else if (name.equals("saveJSON_OUT")) {
             String pathstring = (String) args[0];           
             Path path = Paths.get( pathstring );
             JSONObject jo = new JSONObject( jsonmap );
-            try ( BufferedWriter writer = Files.newBufferedWriter(path, Charset.forName("UTF-8")) ){               
-                writer.write( jo.toString(2) );
-            }catch(IOException ex){
-                ex.printStackTrace();
-            }            
-            System.out.println("[plugin] JSON out written...");
-        }
+            if ( checkJSONOUTconsistency( jo ) ){
+                try ( BufferedWriter writer = Files.newBufferedWriter(path, Charset.forName("UTF-8")) ){               
+                    writer.write( jo.toString(2) );
+                }catch(IOException ex){
+                    ex.printStackTrace();
+                }            
+                System.out.println("[plugin] JSON out written...");
+            } 
+        }		
         else if (name.equals("test2strings")) {
             String text = (String) args[0];
             String text1 = (String) args[1];
@@ -229,7 +244,40 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
         if ( jsonmap == null )
             initializeJSONmap();
         jsonmap.put(labelName, path);
-    }	
+    }
+    
+    boolean checkJSONOUTconsistency(JSONObject jo){
+        Path modspecpath = Paths.get("/module_specification.json");
+        if (Files.exists( modspecpath )){
+            JSONObject modspecjo;
+            try {
+                String ModSpec = new String(Files.readAllBytes( modspecpath));
+                modspecjo = new JSONObject( ModSpec );
+                Iterator<String> modspecOutkeys = modspecjo.getJSONObject("spec").getJSONObject("outputs").keys();
+//                Iterator<String> jokeys = jo.keys();
+                System.out.println("[plugin] === Checking consistency between Module_Specification.json and JSON out file ===");
+                while ( modspecOutkeys.hasNext() ){
+                    String k = modspecOutkeys.next();
+                    if (jo.has( k )){
+                        System.out.println("[plugin] " + k + " ---> " + k);
+                    } else {
+                        System.out.println("[plugin] " + k + " ---> [WARNING] missing key in JSON out");
+                    }
+                }
+                return true;
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                System.out.println("[plugin] /module_soecification.json loading failed.");
+                e.printStackTrace();
+                return false;
+            }
+            
+            
+        } else {
+            System.out.println("[plugin] /module_soecification.json could not be found in ROOT... No check is done.");
+            return true;
+        }
+    }
 
 // 	public static void main(String[] args) throws Exception {
 // 		// set the plugins.dir property to make the plugin appear in the Plugins menu
