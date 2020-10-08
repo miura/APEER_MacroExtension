@@ -134,8 +134,11 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
             if (WFE_JSON != ""){
                 String key = (String) args[0];
                 JSONObject jo = new JSONObject( WFE_JSON );
+                // want to return the proper type but not possible...
+                //Object val = jo.get( key );
                 String val = jo.getString( key );
                 ((String[]) args[1])[0] = (String) val;
+                //((Object[]) args[1])[0] = (Object) val;
             } else {
                 ((String[]) args[1])[0] = "[plugin] None";
             }
@@ -267,14 +270,14 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
                 return true;
             } catch (IOException e) {
                 // TODO Auto-generated catch block
-                System.out.println("[plugin] /module_soecification.json loading failed.");
+                System.out.println("[plugin] /module_specification.json loading failed.");
                 e.printStackTrace();
                 return false;
             }
             
             
         } else {
-            System.out.println("[plugin] /module_soecification.json could not be found in ROOT... No check is done.");
+            System.out.println("[plugin] /module_specification.json could not be found in ROOT... No check is done.");
             return true;
         }
     }
