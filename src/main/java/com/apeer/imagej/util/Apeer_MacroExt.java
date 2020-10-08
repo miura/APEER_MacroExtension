@@ -57,8 +57,10 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
 		ExtensionDescriptor.newDescriptor("setWFE_Input_FilePath", this, ARG_STRING),
 //		ExtensionDescriptor.newDescriptor("setWFE_Output_FilePath", this, ARG_STRING),
 		ExtensionDescriptor.newDescriptor("initializeJSON_out", this),
-		ExtensionDescriptor.newDescriptor("currentTime", this, ARG_OUTPUT + ARG_STRING),
-		ExtensionDescriptor.newDescriptor("captureWFE_JSON", this, ARG_OUTPUT + ARG_STRING),
+//		ExtensionDescriptor.newDescriptor("currentTime", this, ARG_OUTPUT + ARG_STRING),
+        ExtensionDescriptor.newDescriptor("currentTime", this),
+//		ExtensionDescriptor.newDescriptor("captureWFE_JSON", this, ARG_OUTPUT + ARG_STRING),
+        ExtensionDescriptor.newDescriptor("captureWFE_JSON", this),		
         ExtensionDescriptor.newDescriptor("getValue", this, ARG_STRING),		
 	    ExtensionDescriptor.newDescriptor("getWFEvalue", this, ARG_STRING, ARG_OUTPUT + ARG_STRING),
         ExtensionDescriptor.newDescriptor("getWFEvalueBoolean", this, ARG_STRING),        	    
@@ -87,7 +89,8 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
 		else if (name.equals("currentTime")) {
 			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 			//System.out.println(timestamp);
-			((String[]) args[0])[0] = (String) timestamp.toString();
+			//((String[]) args[0])[0] = (String) timestamp.toString();
+			return timestamp.toString();
 		}
         else if (name.equals("setWFE_Input_FilePath")) {
             String filepath = (String) args[0];
@@ -116,7 +119,8 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
                 }
 			}		
 			//System.out.println( WFE_JSON );
-			((String[]) args[0])[0] = (String) WFE_JSON;
+			//((String[]) args[0])[0] = (String) WFE_JSON;
+			return (String) WFE_JSON;
 		}
         else if (name.equals("getValue")) {
             String WFE_JSON = "";
@@ -170,6 +174,7 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
             }
         }
         else if (name.equals("getWFEvalueBoolean")) {
+            //this part is still a test
             String WFE_JSON = "";
             File wfef = new File(WFE_input_file);
             if ( !wfef.exists() ){
