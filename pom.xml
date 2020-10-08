@@ -14,7 +14,7 @@
 
 	<groupId>com.apeer</groupId>
 	<artifactId>Apeer_MacroExt</artifactId>
-	<version>0.1.1-SNAPSHOT</version>
+	<version>0.1.2-SNAPSHOT</version>
 
 	<name>APEER MacroExt</name>
 	<description>A Maven project implementing an ImageJ 1.x plugin.</description>

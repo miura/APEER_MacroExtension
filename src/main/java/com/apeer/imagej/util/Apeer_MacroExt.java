@@ -59,7 +59,9 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
 		ExtensionDescriptor.newDescriptor("initializeJSON_out", this),
 		ExtensionDescriptor.newDescriptor("currentTime", this, ARG_OUTPUT + ARG_STRING),
 		ExtensionDescriptor.newDescriptor("captureWFE_JSON", this, ARG_OUTPUT + ARG_STRING),
+        ExtensionDescriptor.newDescriptor("getValue", this, ARG_STRING),		
 	    ExtensionDescriptor.newDescriptor("getWFEvalue", this, ARG_STRING, ARG_OUTPUT + ARG_STRING),
+        ExtensionDescriptor.newDescriptor("getWFEvalueBoolean", this, ARG_STRING),        	    
 	    ExtensionDescriptor.newDescriptor("saveTiffAPEER", this, ARG_STRING, ARG_STRING),
 	    ExtensionDescriptor.newDescriptor("saveResultsAPEER", this, ARG_STRING, ARG_STRING),
 	    ExtensionDescriptor.newDescriptor("saveTableAPEER", this, ARG_STRING, ARG_STRING, ARG_STRING),
@@ -116,6 +118,30 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
 			//System.out.println( WFE_JSON );
 			((String[]) args[0])[0] = (String) WFE_JSON;
 		}
+        else if (name.equals("getValue")) {
+            String WFE_JSON = "";
+            File wfef = new File(WFE_input_file);
+            if ( !wfef.exists() ){
+                System.out.println( "[plugin] Loading input parameters from environment" );
+                WFE_JSON = java.lang.System.getenv("WFE_INPUT_JSON");
+            } else {
+                System.out.println( "[plugin] Loading input parameters from local file" );
+                try {
+                    WFE_JSON = new String(Files.readAllBytes(Paths.get( WFE_input_file )));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }       
+            //System.out.println( WFE_JSON );
+            if (WFE_JSON != ""){
+                String key = (String) args[0];
+                JSONObject jo = new JSONObject( WFE_JSON );
+                String val = jo.getString( key );
+                return (String) val;
+            } else {
+                return "[plugin] None";
+            }
+        }		
         else if (name.equals("getWFEvalue")) {
             String WFE_JSON = "";
             File wfef = new File(WFE_input_file);
@@ -143,6 +169,35 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
                 ((String[]) args[1])[0] = "[plugin] None";
             }
         }
+        else if (name.equals("getWFEvalueBoolean")) {
+            String WFE_JSON = "";
+            File wfef = new File(WFE_input_file);
+            if ( !wfef.exists() ){
+                System.out.println( "[plugin] Loading input parameters from environment" );
+                WFE_JSON = java.lang.System.getenv("WFE_INPUT_JSON");
+            } else {
+                System.out.println( "[plugin] Loading input parameters from local file" );
+                try {
+                    WFE_JSON = new String(Files.readAllBytes(Paths.get( WFE_input_file )));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }       
+            //System.out.println( WFE_JSON );
+            if (WFE_JSON != ""){
+                String key = (String) args[0];
+                JSONObject jo = new JSONObject( WFE_JSON );
+                // want to return the proper type but not possible...
+                Object val = jo.get( key );
+                //String val = jo.getString( key );
+                //((String[]) args[1])[0] = (String) val;
+                //((Object[]) args[1])[0] = (Object) val;
+                return (String) val;
+            } else {
+                return  "0";
+                //((String[]) args[1])[0] = "[plugin] None";
+            }
+        }		
         else if (name.equals("saveTiffAPEER")) {
             String labelstring = (String) args[0];
             String pathstring = (String) args[1];
