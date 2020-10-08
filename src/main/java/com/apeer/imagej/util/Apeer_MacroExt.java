@@ -141,9 +141,15 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
                 String key = (String) args[0];
                 JSONObject jo = new JSONObject( WFE_JSON );
                 String val = jo.getString( key );
+                
+                // dealing with boolean values. 
+                // even if the values are in String, 1 and 0 are considered as true and false in Macro. 
+                // wow. 
+                if (val.equals("true")) val = "1";
+                if (val.equals("false")) val = "0";                 
                 return (String) val;
             } else {
-                return "[plugin] None";
+                return "[plugin] No value found";
             }
         }		
         else if (name.equals("getWFEvalue")) {
@@ -166,7 +172,7 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
                 JSONObject jo = new JSONObject( WFE_JSON );
                 // want to return the proper type but not possible...
                 //Object val = jo.get( key );
-                String val = jo.getString( key );
+                String val = jo.getString( key );               
                 ((String[]) args[1])[0] = (String) val;
                 //((Object[]) args[1])[0] = (Object) val;
             } else {
