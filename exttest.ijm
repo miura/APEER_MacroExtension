@@ -9,15 +9,15 @@ print( curt );
 print("----");
 //Ext.test2strings("thefirst", "the second");
 
-inputpath = "/Users/miura/Dropbox/Freelance/projects/ZEISS_APEER/APEER_IJM_EpidermalCell_Tracking/params/WFE_input_params.json";
+inputpath = "/Users/miura/Dropbox/Freelance/projects/ZEISS_APEER/WF_TumorBloodVessels/ij_skeletonize/params/WFE_input_params.json";
 //inputpath = "/params/WFE_input_params.json";
 Ext.setWFE_Input_FilePath( inputpath );
 wfejson = Ext.captureWFE_JSON();
 print( wfejson );
 
 print("------");
-filename = Ext.getValue("trackstack_name");
-print("trackstack_name:", filename);
+filename = Ext.getValue("3d_image_stack");
+print("3d_image_stack:", filename);
 
 print("------");
 Ext.initializeJSON_out();
