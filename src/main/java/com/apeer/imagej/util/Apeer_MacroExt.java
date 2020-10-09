@@ -68,6 +68,7 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
 	    ExtensionDescriptor.newDescriptor("saveResultsAPEER", this, ARG_STRING, ARG_STRING),
 	    ExtensionDescriptor.newDescriptor("saveTableAPEER", this, ARG_STRING, ARG_STRING, ARG_STRING),
 	    ExtensionDescriptor.newDescriptor("saveAsAPEER", this, ARG_STRING, ARG_STRING, ARG_STRING),
+	    ExtensionDescriptor.newDescriptor("saveStringAPEER", this, ARG_STRING, ARG_STRING, ARG_STRING),
 		ExtensionDescriptor.newDescriptor("saveJSON_OUT", this, ARG_STRING),
 //		ExtensionDescriptor.newDescriptor("checkSaveJSON_OUT", this, ARG_STRING),
 		ExtensionDescriptor.newDescriptor("shout", this, ARG_STRING), 
@@ -234,6 +235,13 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
             String pathstring = (String) args[2];
             saveAsAPEER(labelstring, formatstring, pathstring);
             System.out.println("[plugin] Saved Results");
+        } 
+        else if (name.equals("saveStringAPEER")) {
+            String labelstring = (String) args[0];
+            String text = (String) args[1];
+            String pathstring = (String) args[2];
+            saveStringJson(labelstring, text, pathstring);
+            System.out.println("[plugin] Saved text");
         } 		
 //        else if (name.equals("saveJSON_OUT")) {
 //            String pathstring = (String) args[0];           
@@ -288,6 +296,13 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
             initializeJSONmap();
         jsonmap.put(labelName, path);
     }
+    //save string as a text file (.txt)
+    void saveStringJson(String labelname, String text, String path){
+        IJ.saveString(text, path);
+        if ( jsonmap == null )
+            initializeJSONmap();
+        jsonmap.put(labelname, path);
+    }    
     //save results as CSV file if the path ends with .csv
     void saveTableJson(String labelName, String tableTitle, String path){
         //IJ.saveAs("Results", path);
