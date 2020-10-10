@@ -28,5 +28,5 @@ setThreshold(0, 254);
 run("Analyze Particles...", "display exclude clear");
 Ext.saveTiffAPEER("image", "/Users/miura/Downloads/testap.tif");
 Ext.saveResultsAPEER("data", "/Users/miura/Downloads/testap.csv");
-Ext.saveStrinAPEER("text", "this is the content of the textfile.", "/Users/miura/Downloads/tes.txt");
+Ext.saveStringAPEER("text", "this is the content of the textfile.", "/Users/miura/Downloads/tes.txt");
 Ext.saveJSON_OUT("/Users/miura/Downloads/out.json");
