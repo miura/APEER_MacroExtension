@@ -34,7 +34,9 @@ In this example, `imagefile_path` is the key (or tag), and `"/Users/me/image.tif
 
 (Fig. )
 
-For this reason, we list such keys in a file named "**Module_Specification.json**", that is saved in the root directory of each APEER module. An example of this file is shown in below, copied from the [Documentation page in APEER](https://docs.apeer.com/tutorials/python-ome-tiff-example). 
+### Module_Specification.json
+
+For this reason, we list such keys in a file named "**Module_Specification.json**", that is saved in the root directory of each APEER module. This file specifies the name of required input and output variables. An example of this file is shown in below, copied from the [Documentation page in APEER](https://docs.apeer.com/tutorials/python-ome-tiff-example). 
 
 
 ```json
@@ -96,7 +98,11 @@ For this reason, we list such keys in a file named "**Module_Specification.json*
 }
 ```
 
-Modulel_Specification.json file has two objects named `spec` and `ui`. Each of these objects contains same number of objects with same names. Here, there are four objects with name `input_image`, `angle`, `shift_x` and `shift_y`. These are the names of the variables that needs to be associated with some value. Within the `spec` object, and each parameter object is specified with their type, like `file` or `string`. It's not appearing here, but the type can also be `choice_binary` (what others may call it Boolean), `choice_single`, `integer`, and `number`
+Modulel_Specification.json file has two objects named `spec` and `ui`. Each of these objects contains `inputs` and `outputs` objects. This structure is always same in all APEER modules. What we need to define is objects below these hierarchy. 
+
+Number of objects under each of these are same and with identical names in `spec` and `ui`.  Here, there are four objects with name `input_image`, `angle`, `shift_x` and `shift_y` inside `inputs` object (let's call them "parameter objects", as we will use them in macro), and no object within `outputs` object.  These are the names of the variables that needs to be associated with some value - waiting to be determined in runtime. 
+
+Within the `spec` object, and each parameter object is specified with their type, like `file` or `string`. It's not appearing here, but the type can also be `choice_binary` (what others may call it Boolean), `choice_single`, `integer`, and `number.`
 
 [How do we fill the value?]
 
