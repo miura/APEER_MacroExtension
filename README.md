@@ -4,11 +4,195 @@ Kota Miura
 
 ## Introduction
 
-This plugin addes new macro commands to ImageJ (Fiji distribution). These commands are supposed to be helpful for coding ImageJ macro to be used as a part of APEER modules. Although it is possible to write everything to create an APEER module from scratch using only Built-In ImageJ Macro Functions, additional macro commands added by this plugin allow you to shortcut many efforts to let you become focused on the coding of desired image processing and analysis. 
+This plugin adds new macro commands on to ImageJ (Fiji distribution) for creating APEER modules. Although it is possible without this plugin to write an APEER module from scratch, based only on Built-In ImageJ Macro Functions, the extended macro commands added on by this plugin allow you to shortcut many steps to let you become focused on the coding of image processing and analysis. For example, there needs to be a routine to write out a JSON file listing all output items, but this can be done much easier using the extended macro command `saveJSON_OUT( pathstring ).` 
 
-To understand how these new commands work, it is essential to know how file and parameters are loaded and saved in APEER system. Although more details are written in the documentaiton pages in APEER website, here, we focus on how files and parameters are managed for inputs and outputs when ImageJ macro is used. If you know "Module_Specification.json" file well and it's role, please skip the next section and directly move on to "Usage" section. 
+To understand how these new commands work, it is essential to know how file and parameters are loaded and saved in APEER system. More details are written in the documentaiton pages in APEER website. If you already have expereince and know details, please just go on. If you do not, please read the section "APEER Module I/O" later in this document, to help you understand what is going on.  
+
+## Installing the Macro Extension
+
+For APEER module project, insert the following line in the Dockerfile:
+
+`ADD https://github.com/miura/APEER_MacroExtension/releases/download/v0.2.1/Apeer_MacroExt-0.2.1-SNAPSHOT.jar /Fiji.app/plugins/`
+
+This will let Docker to download the plugin and then copy it to the Fiji plugin directory within the container. 
+
+If you want to test it in your local OS, download the plugin JAR file to the plugin folder of ImageJ or Fiji in your local machine. 
+
+##Usage
+
+### Essential Commands
+
+For using Macro extension commands added by this plugin, new commands should be initialized in your macro by inserting the follwoing one line at the beginning of macro code. 
+
+`run("APEER MacroExtensions");`
+
+Then for the local development, path to the Workflow Ennvironment (WFE) Input Parameter file (e.g. WFE_input_params.json) should be specified by the follwoing command:
+
+`Ext.setWFE_Input_FilePath( path );`
+
+After the path of parameter JSON file is set, we can retreve actual parameter values based on the key for each parameter.
+
+`value = Ext.getValue( key );`
+
+After processing and analyzing images, we need to save results as file/s. There are built-in commands for saving images, tables, and text, but avoid use these build-in commands (such as `save(format, path ` and `saveAs(format, path)`) and use extended commands. 
+
+`Ext.saveTiffAPEER(outputFileKey, path);`
+
+`Ext.saveResultsAPEER( outputFileKey, path);`
+
+Using these extended commands are essential for saving the output parameter JSON file, which should be done near the end of the macro. 
+
+`Ext.saveJSON_OUT(  fullpath );`
+
+Extended commands for file saving caches the file key and the file path value, and those cached values are retrieved and saved as a JSON file by `saveJSON_OUT`command. 
+
+Finally, macro should terminate currently running ImageJ/Fiji instance by itself using the following command. 
+
+`Ext.exit();`
+
+As an optional but frequently used command is 
+
+`Ext.shout( string );`
+
+This command prints the string in the console (stdout). 
+
+###Example ImageJ macro code
+
+Here is an actual example of ImageJ macro code with extended commands. This macro has six steps:
+
+1. Preamble
+2. Set parameters
+3. Open image
+4. Core
+5. Saving Files
+6. Saving WFE JSON out 
+
+Steps No. 3 and 4 are what people usually code in normal Fiji GUI or command line environment. Steps 1, 2, 5, 6 are procedures that are specific to APEER environment, and where extended commands are used.   
+
+```Javascript
+//========= preamble ======= 
+//install Macro Extensions for APEER environment
+run("APEER MacroExtensions");
+
+//set path to local WFE parameter file
+wfeparam_path = "/params/WFE_input_params.json";
+Ext.setWFE_Input_FilePath( wfeparam_path );
+
+//check if parameters can be captured
+wfejson = Ext.captureWFE_JSON();
+Ext.shout( wfejson );
+
+//=== set parameters ===
+inputdir = "/input/";
+outputdir = "/output/";
+INPUT_IMAGE = Ext.getValue("input_image");
+excludeEdgeParticles = Ext.getValue("exclude_Edge_Particles");
+JSONOUT_NAME = Ext.getValue("WFE_output_params_file");
+
+//========= open image ======= 
+Ext.shout( "Open: " + INPUT_IMAGE );
+open( INPUT_IMAGE );
+orgID = getImageID();
+
+//========= Core ======= 
+if (excludeEdgeParticles)
+	opt = "display exclude clear";
+else 
+	opt = "display clear";
+	
+run("Auto Threshold", "method=Otsu white");
+run("Analyze Particles...", opt);
+
+//========= Saving Files ======= 
+//save binary image data
+selectImage( orgID );
+outputFileKey = "binarized";
+outfullpath = outputdir + utputFileKey + ".tif";
+Ext.saveTiffAPEER(outputFileKey, outfullpath);
+Ext.shout("...saved: " + outfullpath );
+
+//save analysis results data
+outputResultFileKey = "particleAnalysis_results";
+outResultsfullpath = outputdir + outputResultFileKey + ".csv";
+Ext.saveResultsAPEER( outputResultFileKey, outResultsfullpath);
+Ext.shout("...saved: " + outResultsfullpath );
+
+//=== saving WFE JSON out ===
+Ext.saveJSON_OUT( outputdir + JSONOUT_NAME);
+Ext.shout("...saved: " + JSONOUT_NAME);
+Ext.shout("JOB DONE.");
+Ext.exit();
+```
+
+
+
+
+
+## Command Reference
+
+| command                                                      | description                                                  |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| Ext.currentTime()                                            | **[Optional]** Returns current time as a string.             |
+| Ext.captureWFE_JSON( *wfe_json* )                            | **[Optional]** Used only for checking that WFE is loaded in the current environment, or from a local file. Returns the Work Flow Environment (WFE) variables in JSON format. Use *Ext.shout( string )* to print the JSON text in the console. |
+| Ext.exit()                                                   | **[Required]** System exit. Terminates currently running ImageJ/Fiji instance - and this is needed for running it in headless mode to finalize the processing. Use this with caution in the local environment, because this commands terminates (quits) currently running Fiji instance. |
+| Ext.getValue( *keystring* )                                  | **[Required]** This command returns a value for the given *keystring from WFE varibles from Environmental variables. During development, WFE is acquired from local file *WFE_input_params.json*. |
+| Ext.initializeJSON_out()                                     | Clear and resets the JSON out key-value pairs.               |
+| Ext.saveAsAPEER(*keystring, formatstring, pathstring* )      | This command is an extension of standard macro command saveAs(format, path), added with registering of the *pathstring* as value for the key *keystring*. *Ext.saveResultsAPEER, Ext.saveTableAPEER, and Ext.saveTiffAPEER* are output-format specified version of this command. |
+| saveJSON_OUT( *pathstring* )                                 | **[Required]** After all files are saved in the macro, key-value pairs for each saved file are only internally stored. To output those key-value pairs as a JSON file, this command can be used to output JSON-out.json file specified by *pathstring*. |
+| Ext.saveResultsAPEER( *keystring, pathstring*)               | **Saves a CSV file specified by pathstring** (absolute path: follow the convention and use /output directory for sving files). When a CSV file specified by *pathstring* is saved using this command, *keystring* is registered as well. This registered key-value pair is then used for inserting this pair to the JSON out file (do this after all processing and saving are done using *saveJSON_OUT* command). It is necessary that that the *keystring* should be identical to one of the keys in outputs stated in the *module_specification.json*. |
+| Ext.saveTableAPEER(*keystring, tableNameString, pathstring*) | Similar to Ext.saveResultsAPEER, but non-Results table with a specific title *tableNameString* can be saved. |
+| Ext.saveTiffAPEER ( *keystring,  pathstring* );              | **Saves a tiff file specified by *pathstring*** (absolute path: follow the convention and use /output directory). When a TIFF file specified by *pathstring* is saved using this command, *keystring* is registered as well. This registered key-value pair is then used for inserting this pair to the JSON out file (do this after all processing and saving are done using *saveJSON_OUT* command). It is necessary that that the *keystring* should be identical to one of the keys in outputs stated in the *module_specification.json*. |
+| saveStringAPEER(*keystring, textString, pathstring*)         | **Saves *textString* to a text file specified by *pathstring*** (absolute path: follow the convention and use /output directory). When a TEXT file specified by *pathstring* is saved using this command, *keystring* is registered as well. This registered key-value pair is then used for inserting this pair to the JSON out file (do this after all processing and saving are done using *saveJSON_OUT* command). It is necessary that that the *keystring* should be identical to one of the keys in outputs stated in the *module_specification.json*. |
+| Ext.setWFE_Input_FilePath( *pathstring* )                    | **[required for local testing]** This commands sets the file path to the **WFE_input_params.json** file. Details: Input data information that are required for running the macro, such as the file path to the image data, parameter settings for the execution of certain algorithm (e.g. Gaussian blur sigma value) are passed to the module via an environmental variable *WFE_INPUT_JSON*, that is stored in the operation system, when the module is executed in the APEER server. This is because modules are supposed to be a part of a workflow, and some outputs data from one module are passed to the next module and location of these data files and  raw values should be notified to the next module, and this is done using this environmental variable. However, in case of running the module locally for development, we can also provide those information as a text file called **WFE_input_params.json**. This commands allows you to set the path to this file. |
+| Ext.shout( *String* )                                        | **[Optional]**This is like the build-in IJ macro `print( string )`, but outputs the *String* in the console. As the Log window is not present in the docker-headless mode, it helps debugging and also to monitor the progress especially during development. |
+|                                                              |                                                              |
+|                                                              |                                                              |
+|                                                              |                                                              |
+|                                                              |                                                              |
+
+
+
+## Example
+
+Below is for testing the Macro Extension commands. 
+
+```javascript
+// test macro extensions. 
+run("APEER MacroExtensions");
+Ext.shout("here is the output");
+
+curt = Ext.currentTime();
+Ext.shout( "logging " + curt );
+print( curt );
+print("----");
+//Ext.test2strings("thefirst", "the second");
+
+inputpath = "/<path>/<to>/WFE_input_params.json";
+//inputpath = "/params/WFE_input_params.json";
+Ext.setWFE_Input_FilePath( inputpath );
+wfejson = Ext.captureWFE_JSON();
+print( wfejson );
+
+print("------");
+filename = Ext.getValue("3d_image_stack");
+print("3d_image_stack:", filename);
+
+print("------");
+Ext.initializeJSON_out();
+
+print("------");
+run("Blobs (25K)");
+run("Auto Threshold", "method=Otsu");
+setThreshold(0, 254);
+run("Analyze Particles...", "display exclude clear");
+Ext.saveTiffAPEER("image", "/Users/miura/Downloads/testap.tif");
+Ext.saveResultsAPEER("data", "/Users/miura/Downloads/testap.csv");
+Ext.saveJSON_OUT("/Users/miura/Downloads/out.json");
+```
 
 ##APEER Module I/O
+
+Here, we focus on how files and parameters are managed for inputs and outputs when ImageJ macro is used. 
 
 **Input file is unknown**: Opening and saving of files in APEER module are achieved not by directly providing the file path for opening and saving: the reason is that for a modul placed in a APEER workflow, the exact  name of the input file and its location (file path) is unknown until the runtime and can be various. 
 
@@ -131,86 +315,3 @@ both for input files and parameters, we specify them in a special input file.
 [like input files, we declare the output keys - in case of outputs, we only output files in most cases - but can be any? --- need some confirmation]
 
 [file path of output files needs to be told to the systems - JSONout. We create it in the output folder, by default]. 
-
-## Installing the Macro Extension
-
-For APEER module project, insert the following line in Dockerfile:
-
-`ADD https://github.com/miura/APEER_MacroExtension/releases/download/v0.2.0/Apeer_MacroExt-0.2.0-SNAPSHOT.jar /Fiji.app/plugins/`
-
-This will download the plugin and then copy it to the Fiji plugin directory. When you want to test it, download the plugin JAR file to the plugin folder of ImageJ or Fiji. 
-
-##Step-By-Step Usage
-
-### Local Development
-
-For using Macro extension commands added by this plugin, load new commands in your ImageJ macro by inserting the follwoing one line in the macro\. 
-
-`run("APEER MacroExtensions");`
-
-
-
-## Command Reference
-
-| command                                                      | description                                                  |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| Ext.currentTime()                                            | **[Optional]** Returns current time as a string.             |
-| Ext.captureWFE_JSON( *wfe_json* )                            | **[Optional]** Used only for checking that WFE is loaded in the current environment, or from a local file. Returns the Work Flow Environment (WFE) variables in JSON format. Use *Ext.shout( string )* to print the JSON text in the console. |
-| Ext.exit()                                                   | **[Required]** System exit. Terminates currently running ImageJ/Fiji instance - and this is needed for running it in headless mode to finalize the processing. Use this with caution in the local environment, because this commands terminates (quits) currently running Fiji instance. |
-| Ext.getValue( *keystring* )                                  | **[Required]** This command returns a value for the given *keystring from WFE varibles from Environmental variables. During development, WFE is acquired from local file *WFE_input_params.json*. |
-| Ext.initializeJSON_out()                                     | Clear and resets the JSON out key-value pairs.               |
-| Ext.saveAsAPEER(*keystring, formatstring, pathstring* )      | This command is an extension of standard macro command saveAs(format, path), added with registering of the *pathstring* as value for the key *keystring*. *Ext.saveResultsAPEER, Ext.saveTableAPEER, and Ext.saveTiffAPEER* are output-format specified version of this command. |
-| saveJSON_OUT( *pathstring* )                                 | **[Required]** After all files are saved in the macro, key-value pairs for each saved file are only internally stored. To output those key-value pairs as a JSON file, this command can be used to output JSON-out.json file specified by *pathstring*. |
-| Ext.saveResultsAPEER( *keystring, pathstring*)               | **Saves a CSV file specified by pathstring** (absolute path: follow the convention and use /output directory for sving files). When a CSV file specified by *pathstring* is saved using this command, *keystring* is registered as well. This registered key-value pair is then used for inserting this pair to the JSON out file (do this after all processing and saving are done using *saveJSON_OUT* command). It is necessary that that the *keystring* should be identical to one of the keys in outputs stated in the *module_specification.json*. |
-| Ext.saveTableAPEER(*keystring, tableNameString, pathstring*) | Similar to Ext.saveResultsAPEER, but non-Results table with a specific title *tableNameString* can be saved. |
-| Ext.saveTiffAPEER ( *keystring,  pathstring* );              | **Saves a tiff file specified by *pathstring*** (absolute path: follow the convention and use /output directory). When a TIFF file specified by *pathstring* is saved using this command, *keystring* is registered as well. This registered key-value pair is then used for inserting this pair to the JSON out file (do this after all processing and saving are done using *saveJSON_OUT* command). It is necessary that that the *keystring* should be identical to one of the keys in outputs stated in the *module_specification.json*. |
-| saveStringAPEER(*keystring, textString, pathstring*)         | **Saves *textString* to a text file specified by *pathstring*** (absolute path: follow the convention and use /output directory). When a TEXT file specified by *pathstring* is saved using this command, *keystring* is registered as well. This registered key-value pair is then used for inserting this pair to the JSON out file (do this after all processing and saving are done using *saveJSON_OUT* command). It is necessary that that the *keystring* should be identical to one of the keys in outputs stated in the *module_specification.json*. |
-| Ext.setWFE_Input_FilePath( *pathstring* )                    | **[required for local testing]** This commands sets the file path to the **WFE_input_params.json** file. Details: Input data information that are required for running the macro, such as the file path to the image data, parameter settings for the execution of certain algorithm (e.g. Gaussian blur sigma value) are passed to the module via an environmental variable *WFE_INPUT_JSON*, that is stored in the operation system, when the module is executed in the APEER server. This is because modules are supposed to be a part of a workflow, and some outputs data from one module are passed to the next module and location of these data files and  raw values should be notified to the next module, and this is done using this environmental variable. However, in case of running the module locally for development, we can also provide those information as a text file called **WFE_input_params.json**. This commands allows you to set the path to this file. |
-| Ext.shout( *String* )                                        | **[Optional]**This is like the build-in IJ macro `print( string )`, but outputs the *String* in the console. As the Log window is not present in the docker-headless mode, it helps debugging and also to monitor the progress especially during development. |
-|                                                              |                                                              |
-|                                                              |                                                              |
-|                                                              |                                                              |
-|                                                              |                                                              |
-
-
-
-## Example
-
-Below is for testing the Macro Extension commands. 
-
-```javascript
-// test macro extensions. 
-run("APEER MacroExtensions");
-Ext.shout("here is the output");
-
-curt = Ext.currentTime();
-Ext.shout( "logging " + curt );
-print( curt );
-print("----");
-//Ext.test2strings("thefirst", "the second");
-
-inputpath = "/<path>/<to>/WFE_input_params.json";
-//inputpath = "/params/WFE_input_params.json";
-Ext.setWFE_Input_FilePath( inputpath );
-wfejson = Ext.captureWFE_JSON();
-print( wfejson );
-
-print("------");
-filename = Ext.getValue("3d_image_stack");
-print("3d_image_stack:", filename);
-
-print("------");
-Ext.initializeJSON_out();
-
-print("------");
-run("Blobs (25K)");
-run("Auto Threshold", "method=Otsu");
-setThreshold(0, 254);
-run("Analyze Particles...", "display exclude clear");
-Ext.saveTiffAPEER("image", "/Users/miura/Downloads/testap.tif");
-Ext.saveResultsAPEER("data", "/Users/miura/Downloads/testap.csv");
-Ext.saveJSON_OUT("/Users/miura/Downloads/out.json");
-```
-
-
-
