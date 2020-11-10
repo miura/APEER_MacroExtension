@@ -4,8 +4,6 @@
 
 Kota Miura
 
-[TOC]
-
 ## Introduction
 
 This plugin adds new macro commands in ImageJ (Fiji distribution) for creating APEER modules. Although it is possible without this plugin to write an APEER module from scratch, based only on Built-In ImageJ Macro Functions, the extended macro commands added on by this plugin allow you to shortcut many steps to let you become focused on the coding of image processing and analysis. 
@@ -22,9 +20,17 @@ For APEER module project, insert the following line in the Dockerfile:
 
 This will let Docker to download the plugin and then copy it to the Fiji plugin directory within the container. 
 
-If you want to test it in your local OS, download the plugin JAR file from the [release pages of the GitHub repository](https://github.com/miura/APEER_MacroExtension/releases), copy it into the plugin folder of ImageJ or Fiji in your local machine. 
+If you want to test it in your local OS, download the plugin JAR file from the [release pages of the GitHub repository](https://github.com/miura/APEER_MacroExtension/releases), copy it into the plugin folder of ImageJ or Fiji in your local machine.
 
-##Usage
+### Testing the example project in your local environment
+
+Download the complete package from [here](https://www.dropbox.com/s/rwuzmlqyi5vtb15/APEER_IJ_macro_example.zip?dl=0). Unzip, and then in command line, build the docker container and then run. Example commads for this can be:
+```bash
+docker build --rm -t miura/ijmrunner 
+docker run -it --rm -v $(pwd)/input:/input -v $(pwd)/output:/output -v $(pwd)/params:/params miura/ijmrunner:latest
+```
+
+## Usage
 
 ### Essential Commands
 
@@ -64,7 +70,7 @@ An optional but frequently used command is
 
 This command prints the string in the console (stdout). 
 
-###Actual ImageJ macro code
+### Actual ImageJ macro code
 
 Here is an actual example of ImageJ macro code, which simply apply Particle Analysis to the input image and outputs binary image and the results table (CSV),  using extended commands. The whole project can be downloaded from [the GitHub repository](https://github.com/miura/APEER-IJMacro-Example). This macro has six steps:
 
@@ -209,7 +215,7 @@ Effectively, only five files listed at the begninning of this subsection becomes
 
  
 
-##APEER Module I/O
+## APEER Module I/O
 
 Here, we focus on how files and parameters are managed for inputs and outputs when ImageJ macro is used as an APEER module. 
 
