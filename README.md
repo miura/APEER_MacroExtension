@@ -231,9 +231,11 @@ In normal ImageJ macro, when we want to open a file, we provide the file path to
 
 Alternatively, we can provide an empty path like `open()` , which triggers ImageJ to show a file chooser window to let the user choose a file interactively. However, APEER does not create a file chooser window during its execution and uses a different strategy to specify the input file. 
 
-In APEER, the input file is specified through (1) the Web GUI and/or (2) by a line that connects from an output of the upstream module to the module that we are now working on (Fig). 
+In APEER, the input file is specified through (1) the Web GUI and/or (2) by a line that connects from an output of the upstream module to the module that we are now working on (Fig. 1). 
 
-(Fig)
+![workflowDesign](fig/workflowDesign.png)
+
+<center>Fig. 1 A workflow assembled by connecting modules with lines. </center>
 
 For this module-line-module style to work properly, we need to notify the APEER system that the module needs an input file to run the macro contained in the module. If we need two files, we need to notify the system that we need two files. Similary, if there is a parameter in the macro, that needs to be adjusted depending on the nature of the images, we also need to notify APEER sytem that there is a parameter that needs to have some user input (though we can also let the parameter value to take the default value). 
 
@@ -241,9 +243,7 @@ How do we notify such requirements to the system? Here comes the concept of "**W
 
 `imagefile_path : "/Users/me/image.tif"`
 
-In this example, `imagefile_path` is the key (or tag), and `"/Users/me/image.tif"` is the value for that key. Here, the value is fixed to a specific path. If we let the value to be empty and let the system to know that THERE IS A KEY THAT IS WAITING FOR A SPECIFIC VALUE, we can let the web interface of APEER to create a symbol in a module that the module has a empty field for someone to specify the input and determine the value for that key (Fig ). Then APEER system can place a inlet and outlet for each module for connecting it with other modules for passing those files.  
-
-(Fig. )
+In this example, `imagefile_path` is the key (or tag), and `"/Users/me/image.tif"` is the value for that key. Here, the value is fixed to a specific path. If we let the value to be empty and let the system to know that THERE IS A KEY THAT IS WAITING FOR A SPECIFIC VALUE, we can let the web interface of APEER to create a symbol in a module that the module has a empty field for someone to specify the input and determine the value for that key (Fig 1, green circles and triangles). Then APEER system can place a inlet and outlet for each module for connecting it with other modules for passing those files.  
 
 ### Module_Specification.json
 
