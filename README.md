@@ -217,7 +217,7 @@ Effectively, only five files listed at the begninning of this subsection becomes
 
 ## APEER Module I/O
 
-Here, we focus on how files and parameters are managed for inputs and outputs when ImageJ macro is used as an APEER module. 
+Here, we focus on how files and parameters are managed for inputs and outputs when ImageJ macro is used as an APEER module (Overview of the APEER system can be find in [the ofiicial documentation](https://docs.apeer.com/create-modules/the-apeer-architecture)). 
 
 **Declare that the modle needs input file/s**: Opening and saving of files in APEER module are achieved not by directly providing the file path for opening and saving: the reason is that for a modul placed in a APEER workflow, the exact  name of the input file and its location (file path) is unknown until the runtime and can be various, but the APEER system should know that the module requires certain input file, so that a workflow can be constructed. 
 
@@ -245,7 +245,7 @@ In this example, `imagefile_path` is the key (or tag), and `"/Users/me/image.tif
 
 ### Module_Specification.json
 
-For this reason, we list such keys of WFE variables in a file named "**Module_Specification.json**", that is saved in the root directory of each APEER module. This file specifies the name of required input and output variables. This file can be composed in the APEER Workspace using a wizard and be downloaded to local machine. It needs to be checked locally in any case to do the local development. An example of this file is shown in below, copied from the [APEER example ImageJ macro](https://github.com/miura/APEER-IJMacro-Example). 
+For this reason, we list such keys of WFE variables in a file named "**Module_Specification.json**", that is saved in the root directory of each APEER module. This file specifies the name of required input and output variables. This file can be composed in the APEER Workspace using a wizard and be downloaded to local machine ([see more details in the official documentation](https://docs.apeer.com/documentation/module-specification)). It needs to be checked locally in any case to do the local development. An example of this file is shown in below, copied from the [APEER example ImageJ macro](https://github.com/miura/APEER-IJMacro-Example). 
 
 
 ```json
