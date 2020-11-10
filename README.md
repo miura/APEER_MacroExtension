@@ -32,6 +32,8 @@ docker run -it --rm -v $(pwd)/input:/input -v $(pwd)/output:/output -v $(pwd)/pa
 
 ## Usage
 
+Essential commands are briefly explained, and then the actual example of using extension commands in ImageJ macro will be shown. The file structure required to run the code in the APEER environment, and during the local development, are individually explained. Lastly, a table listing extension commands will be shown. 
+
 ### Essential Commands
 
 For using Macro extension commands added by this plugin, it should be initialized in your macro by inserting the follwoing one line at the beginning of the macro code. 
