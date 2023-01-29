@@ -17,6 +17,9 @@ print( wfejson );
 print("------");
 filename = Ext.getValue("3d_image_stack");
 print("3d_image_stack:", filename);
+aboolean = Ext.getValue("prune_ends");
+print("prune_ends:", aboolean);
+
 
 print("------");
 Ext.initializeJSON_out();
