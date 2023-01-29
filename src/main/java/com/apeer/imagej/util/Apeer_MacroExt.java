@@ -350,7 +350,6 @@ public class Apeer_MacroExt implements PlugIn, MacroExtension {
                 }
                 return true;
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 System.out.println("[plugin] /module_specification.json loading failed.");
                 e.printStackTrace();
                 return false;

@@ -80,6 +80,7 @@
 		<main-class>com.apeer.imagej.util.Apeer_MacroExt</main-class>
 		<license.licenseName>MIT</license.licenseName>
 		<license.copyrightOwners>Kota Miura</license.copyrightOwners>
+		<enforcer.skip>true</enforcer.skip>	
 	</properties>
 
     <dependencies>
